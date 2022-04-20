@@ -1,6 +1,7 @@
 package cat
 
 import (
+	"bufio"
 	"io"
 	"os"
 
@@ -52,6 +53,21 @@ func (b *catCommand) Flags() []cli.Flag {
 	}
 }
 
+func (b *catCommand) read(r *bufio.Reader) ([]byte, error) {
+	var (
+		isPrefix = true
+		err      error
+		line, ln []byte
+	)
+
+	for isPrefix && err == nil {
+		line, isPrefix, err = r.ReadLine()
+		ln = append(ln, line...)
+	}
+
+	return ln, err
+}
+
 // Action returns the action of the command
 func (b *catCommand) Action(c *cli.Context) error {
 	args := c.Args()
@@ -67,10 +83,28 @@ func (b *catCommand) Action(c *cli.Context) error {
 			if err != nil {
 				return err
 			}
+			defer fh.Close()
 
-			_, err = io.Copy(os.Stdout, fh)
-			if err != nil {
-				return err
+			reader := bufio.NewReader(fh)
+			w := bufio.NewWriter(os.Stdout)
+			flushCounter := 0
+			for {
+				line, err := b.read(reader)
+				if err != nil {
+					if err == io.EOF {
+						break
+					}
+					return err
+				}
+				w.Write(line)
+				w.WriteByte('\n')
+				if flushCounter%10 == 0 {
+					w.Flush()
+				}
+				flushCounter++
+			}
+			if w.Size() > 0 {
+				w.Flush()
 			}
 		}
 	}
