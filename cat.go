@@ -56,7 +56,7 @@ func (b *catCommand) Flags() []cli.Flag {
 func (b *catCommand) Action(c *cli.Context) error {
 	args := c.Args()
 
-	if args.Len() == 1 {
+	if args.Len() == 0 {
 		_, err := io.Copy(os.Stdout, os.Stdin)
 		if err != nil {
 			return err
