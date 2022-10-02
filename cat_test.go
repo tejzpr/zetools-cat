@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	cli "github.com/tejzpr/zcli/v2"
 	"github.com/tejzpr/zetools/commands"
+	cli "github.com/urfave/cli/v2"
 )
 
 func Test_catCommand_Name(t *testing.T) {

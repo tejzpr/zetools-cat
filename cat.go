@@ -5,8 +5,8 @@ import (
 	"io"
 	"os"
 
-	cli "github.com/tejzpr/zcli/v2"
 	"github.com/tejzpr/zetools/commands"
+	cli "github.com/urfave/cli/v2"
 )
 
 func init() {
